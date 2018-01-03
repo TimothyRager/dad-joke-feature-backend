@@ -1,6 +1,7 @@
 package Rager.Timothy.jokes.service;
 
 import Rager.Timothy.jokes.model.Joke;
+import Rager.Timothy.jokes.model.SearchResult;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -23,6 +24,26 @@ public class JokeService {
 
     public List<Joke> getAllJokes() {
         return jokes;
+    }
+
+    public List<Joke> searchForJokes(String searchTerm) {
+        // https://icanhazdadjoke.com/search?term=hipster
+
+        headers.set(HttpHeaders.USER_AGENT, "Nyan-Chat, Zip Code Wilmington");
+        HttpEntity<String> entity = new HttpEntity<>("",headers);
+        ResponseEntity<SearchResult> responseEntity = restTemplate.exchange(API_URL+"/search?term="+searchTerm, HttpMethod.GET, entity, SearchResult.class);
+
+        SearchResult results= responseEntity.getBody();
+        List<Joke> returnJokes = new ArrayList<>(results.getSearchResults());
+        if (returnJokes.size()==0)
+        {
+            Joke errJoke = new Joke("Search for "+searchTerm, "No Jokes for this search term found.");
+            returnJokes.add(errJoke);
+        }
+        for(Joke jk : returnJokes) {
+            addJoke(jk);
+        }
+        return returnJokes;
     }
 
     public Joke getJokeById(String jokeId) {

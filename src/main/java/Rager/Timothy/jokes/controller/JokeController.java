@@ -26,7 +26,10 @@ public class JokeController {
     public List<Joke> getAllCachedJokes() {
         return jokeService.getAllJokes();
     }
-
+    @GetMapping("/jokes/search={searchTerm}")
+    public List<Joke> searchForJokes(@PathVariable String searchTerm) {
+        return jokeService.searchForJokes(searchTerm);
+    }
     @GetMapping("/jokes")
     public Joke getRandomJoke() {
         return jokeService.getRandomJoke();
